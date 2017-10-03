@@ -56,9 +56,21 @@ Service discovery name can be defined using a label variable:
 
 `"MARATHONW_{PORTINDEX}_NAME": "{VALUE}"`
 
-Once we deployed the application in Marathon, the service can me discovered through its name in the grpc client instantiation.
+Once we deployed the application in Marathon, the service can be discovered through its name in the grpc client instantiation.
 
 ```golang
+package main
+
+import (
+       "fmt"
+       "log"
+
+       "github.com/eddyzags/marathonw"
+
+       "google.golang.org/grpc"
+       pb "google.golang.org/grpc/examples/helloworld/helloworld"
+)
+
 func main() {
      b := grpc.RoundRobin(marathonw.NewResolver("http://marathon.mesos:8080"))
 
