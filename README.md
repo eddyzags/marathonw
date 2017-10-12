@@ -55,7 +55,7 @@ Here we defined an application called my-app with a marathonw service discovery 
 
 Service discovery name can be defined using a label variable:
 
-`"MARATHONW_{PORTINDEX}_NAME": "{VALUE}"`
+`"MARATHONW_{PORTINDEX}_NAME": "{NAME}"`
 
 Once we deployed the application in Marathon, the service can be discovered through its name in the grpc client instantiation.
 
