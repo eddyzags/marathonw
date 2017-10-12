@@ -73,11 +73,15 @@ import (
 )
 
 func main() {
-     b := grpc.RoundRobin(marathonw.NewResolver("http://marathon.mesos:8080"))
+     config := &marathonw.Config{
+        MarathonURI: "marathon.mesos:8080",
+     }
+
+     b := grpc.RoundRobin(marathonw.NewResolver(config))
 
      conn, err := grpc.Dial("my-app-discovery", grpc.WithBalancer(b))
      if err != nil {
-       log.Fatalf("Failed to dial grpc server: %v", err)
+        log.Fatalf("Failed to dial grpc server: %v", err)
      }
      defer conn.Close()
 
