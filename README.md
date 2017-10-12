@@ -11,6 +11,7 @@ Marathonw is a grpc watcher for Marathon. A minimalistic library that gives the 
 # Dependencies
 
 * [Marathon](https://mesosphere.github.io/marathon): A production-grade container orchestration platform for Mesosphere's Datacenter
+* [gRPC-Go](https://github.com/grpc/grpc-go): Go implementation of gRPC. A high performance, open source, general RPC framework
 
 # Installation
 
