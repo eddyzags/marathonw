@@ -8,8 +8,8 @@ import (
 	"net/http"
 )
 
-func (m *marathon) apiCall(method, path string, reader io.Reader, result interface{}) error {
-	req, err := m.makeRequest(method, path, reader)
+func (c *Client) apiCall(method, path string, reader io.Reader, result interface{}) error {
+	req, err := c.makeRequest(method, path, reader)
 	if err != nil {
 		return err
 	}
@@ -37,20 +37,20 @@ func (m *marathon) apiCall(method, path string, reader io.Reader, result interfa
 	return nil
 }
 
-func (m *marathon) makeRequest(method, path string, reader io.Reader) (*http.Request, error) {
-	url := fmt.Sprintf("%s/%s", m.config.URI, path)
+func (c *Client) makeRequest(method, path string, reader io.Reader) (*http.Request, error) {
+	url := fmt.Sprintf("%s%s", c.config.URI, path)
 
 	request, err := http.NewRequest(method, url, reader)
 	if err != nil {
 		return nil, err
 	}
 
-	if m.config.HTTPBasicAuthUser != "" && m.config.HTTPBasicAuthPassword != "" {
-		request.SetBasicAuth(m.config.HTTPBasicAuthUser, m.config.HTTPBasicAuthPassword)
+	if c.config.HTTPBasicAuthUser != "" && c.config.HTTPBasicAuthPassword != "" {
+		request.SetBasicAuth(c.config.HTTPBasicAuthUser, c.config.HTTPBasicAuthPassword)
 	}
 
-	if m.config.DCOSToken != "" {
-		request.Header.Add("Authorization", "token="+m.config.HTTPBasicAuthUser)
+	if c.config.DCOSToken != "" {
+		request.Header.Add("Authorization", "token="+c.config.HTTPBasicAuthUser)
 	}
 
 	request.Header.Add("Content-Type", "application/json")

@@ -1,22 +1,45 @@
-package marathonw
+package resolver
 
 import (
+	"github.com/eddyzags/resolver/marathon"
+
 	"google.golang.org/grpc/naming"
 )
 
-// Resolver is an object for managing watcher
 type Resolver struct {
-	*Config
+	marathon *marathon.Client
+	poller   *poll
 }
 
-// NewResolver instantiates a new naming resolver for a grpc client
-func NewResolver(c *Config) naming.Resolver {
-	return &Resolver{c}
+// New instantiates a new resolver given a marathon uri.
+func New(addr string) (*Resolver, error) {
+	m := marathon.NewClient(&marathon.Config{
+		URI: addr,
+	})
+
+	if err := m.Ping(); err != nil {
+		return nil, err
+	}
+
+	return &Resolver{
+		marathon: m,
+	}, nil
 }
 
-// Resolve creates a watcher in order to retrieve the service name
-// addresses for the load balancing process
+// Resolver creates a watcher given a service name
 func (r *Resolver) Resolve(name string) (naming.Watcher, error) {
-	r.serviceName = name
-	return NewWatcher(r.Config)
+	poll, err := newPoll(name, r.marathon)
+	if err != nil {
+		return nil, err
+	}
+
+	// Running marathon poll
+	poll.run()
+
+	return poll, nil
+}
+
+// Ready returns true if one or more probes are monitoring a grpc server
+func (r *Resolver) Ready() bool {
+	return len(r.poller.probes) > 0
 }

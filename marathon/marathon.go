@@ -2,14 +2,7 @@ package marathon
 
 import "fmt"
 
-// Marathon is an interface to provide a http client for marathon framework
-type Marathon interface {
-	Ping() error
-	Applications(label string) ([]*Application, error)
-	Tasks(appID string) ([]*Task, error)
-}
-
-type marathon struct {
+type Client struct {
 	config *Config
 }
 
@@ -22,19 +15,19 @@ type Config struct {
 }
 
 // NewClient instantiates a new marathon client
-func NewClient(config *Config) Marathon {
-	return &marathon{
+func NewClient(config *Config) *Client {
+	return &Client{
 		config: config,
 	}
 }
 
 // Applications returns a set of applications according to a label
-func (m *marathon) Applications(label string) ([]*Application, error) {
+func (c *Client) Applications(label string) ([]*Application, error) {
 	apps := []*Application{}
 
 	path := fmt.Sprintf("/v2/apps?label=%s", label)
 
-	if err := m.apiCall("GET", path, nil, &apps); err != nil {
+	if err := c.apiCall("GET", path, nil, &apps); err != nil {
 		return nil, err
 	}
 
@@ -42,10 +35,10 @@ func (m *marathon) Applications(label string) ([]*Application, error) {
 }
 
 // Tasks returns a specific application's set of tasks
-func (m *marathon) Tasks(appID string) ([]*Task, error) {
+func (c *Client) Tasks(appID string) ([]*Task, error) {
 	tasks := []*Task{}
 
-	if err := m.apiCall("GET", "/v2/tasks", nil, &tasks); err != nil {
+	if err := c.apiCall("GET", "/v2/tasks", nil, &tasks); err != nil {
 		return nil, err
 	}
 
@@ -53,11 +46,11 @@ func (m *marathon) Tasks(appID string) ([]*Task, error) {
 }
 
 // Ping returns an error if the marathon framework is unreachable
-func (m *marathon) Ping() error {
-	return m.apiCall("GET", "/ping", nil, nil)
+func (c *Client) Ping() error {
+	return c.apiCall("GET", "/ping", nil, nil)
 }
 
 // URI returns the marathon uri
-func (m *marathon) URI() string {
-	return m.config.URI
+func (c *Client) URI() string {
+	return c.config.URI
 }

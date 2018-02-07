@@ -1,6 +1,6 @@
-# marathonw
+# Resolver
 
-Marathonw is a grpc watcher for Marathon. A minimalistic library that gives the ability to integrate round robin balancing into a grpc client. It uses Marathon framework, which is a container orchestration platform for Apache Mesos and DC/OS, to interact with a service using a name-based system discovery.
+Resolver is a grpc resolver using Marathon framework for service discovery. A minimalistic library that uses Marathon framework, which is a container orchestration platform for Apache Mesos and Datacenter Operating (DC/OS), to interact with other services using name-based system discovery. Plus, when scaling service, It gives the ability to integrate round robin balancing into a grpc client.
 
 # Features
 
@@ -10,28 +10,32 @@ Marathonw is a grpc watcher for Marathon. A minimalistic library that gives the 
 
 # Dependencies
 
-* [Marathon](https://mesosphere.github.io/marathon): A production-grade container orchestration platform for Mesosphere's Datacenter
-* [gRPC-Go](https://github.com/grpc/grpc-go): Go implementation of gRPC. A high performance, open source, general RPC framework
+* [Marathon](https://mesosphere.github.io/marathon): A production-grade container orchestration platform for Mesosphere's Datacenter.
+* [gRPC-Go](https://github.com/grpc/grpc-go): Go implementation of gRPC. A high performance, open source, general RPC framework.
 
 # Installation
 
-Install Marathonw using the "go get" command:
+Install the resolver using the "go get" command:
 
-`go get github.com/eddyzags/marathonw`
+`go get github.com/eddyzags/resolver`
 
 Import the library into a project:
 
-`import "github.com/eddyzags/marathonw"`
+`import "github.com/eddyzags/resolver"`
 
 # Usage
 
-Marathonw uses marathon labels in order to contacts another service. Let's start with an simple app definition with a marathonw label
+Resolver uses Marathon label feature in order to identify services.
+The marathon label is composed of the service unique name and the port
+index. Those two informations will allow the resolver to identify the
+service's tasks and on which port the grpc client should establish a connection.
+Let's start with a simple app definition:
 
-```
+```json
 {
   "id": "my-app"
   "cpus": 0.1,
-  "mem": 16,
+  "mem": 64,
   "container": {
     "type": "DOCKER",
     "docker": {
@@ -42,20 +46,24 @@ Marathonw uses marathon labels in order to contacts another service. Let's start
       {
         "containerPort": 80,
         "hostPort": 0
+      },
+      {
+        "containerPort": 4242,
+        "hostPort": 0
       }
     ]
   },
   "labels": {
-    "MARATHONW_0_NAME": "my-app-discovery"
+    "RESOLVER_0_NAME": "my-app-service"
   }
 }
 ```
 
-Here we defined an application called my-app with a marathonw service discovery name my-app-discovery which points to the port index 0.
+Here, we have just defined an application called my-app with a service resolver name `my-app-service` which points to the port index 0.
 
-Service discovery name can be defined using a label variable:
+A service resolver name can be defined using a labels map:
 
-`"MARATHONW_{PORTINDEX}_NAME": "{NAME}"`
+`"RESOLVER_{PORTINDEX}_NAME": "{NAME}"`
 
 Once we deployed the application in Marathon, the service can be discovered through its name in the grpc client instantiation.
 
@@ -63,25 +71,25 @@ Once we deployed the application in Marathon, the service can be discovered thro
 package main
 
 import (
-       "fmt"
        "log"
 
-       "github.com/eddyzags/marathonw"
+       "github.com/eddyzags/resolver"
 
        "google.golang.org/grpc"
        pb "google.golang.org/grpc/examples/helloworld/helloworld"
 )
 
 func main() {
-     config := &marathonw.Config{
-        MarathonURI: "marathon.mesos:8080",
+     resolver, err := resolver.New("marathon.mesos:8080")
+     if err != nil {
+        log.Fatalf("couldn't instantiation resolver: %v", err)
      }
 
-     b := grpc.RoundRobin(marathonw.NewResolver(config))
+     b := grpc.RoundRobin(resolver.NewResolver(config))
 
      conn, err := grpc.Dial("my-app-discovery", grpc.WithBalancer(b))
      if err != nil {
-        log.Fatalf("Failed to dial grpc server: %v", err)
+        log.Fatalf("couldn't dial grpc server: %v", err)
      }
      defer conn.Close()
 
@@ -89,9 +97,9 @@ func main() {
 
      r, err := c.SayHello(context.Background(), &pb.HelloRequest{Name: *name})
      if err != nil {
-         log.Fatalf("Failed to send say hello request: %v", err)
+         log.Fatalf("couldn't send say hello request: %v", err)
      }
 
-     fmt.Printf("Response: %s\n", r.Message)
+     log.Printf("Response: %s\n", r.Message)
 }
 ```
