@@ -85,7 +85,7 @@ func main() {
         log.Fatalf("couldn't instantiation resolver: %v", err)
      }
 
-     b := grpc.RoundRobin(resolver.NewResolver(config))
+     b := grpc.RoundRobin(resolver)
 
      conn, err := grpc.Dial("my-app-discovery", grpc.WithBalancer(b))
      if err != nil {
