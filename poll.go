@@ -106,7 +106,7 @@ func (p *poll) Next() ([]*naming.Update, error) {
 					continue
 				}
 
-				go p.process(task)
+				go p.processTask(task)
 
 				ups = append(ups, &naming.Update{
 					Addr: task.Addr(p.portIndex),
@@ -137,7 +137,7 @@ func (p *poll) Next() ([]*naming.Update, error) {
 	}
 }
 
-func (p *poll) process(task *marathon.Task) {
+func (p *poll) processTask(task *marathon.Task) {
 	probe, err := newProbe(task.Addr(p.portIndex), time.Second*5)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "unable to instantiate probe: %v", err)
