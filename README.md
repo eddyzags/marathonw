@@ -1,12 +1,14 @@
 # Resolver
 
-Resolver is a grpc resolver using Marathon framework for service discovery. A minimalistic library that uses Marathon framework, which is a container orchestration platform for Apache Mesos and Datacenter Operating (DC/OS), to interact with other services using name-based system discovery. Plus, when scaling service, It gives the ability to integrate round robin balancing into a grpc client.
+Resolver is a grpc resolver using Marathon framework for service discovery. A minimalistic library that uses Marathon, which is a container orchestration platform for Apache Mesos and Datacenter Operating (DC/OS), to interact with other services using name-based system discovery. Plus when scaling a service, the resolver is able to monitor all the running service's tasks simultaneously.
+
+integrate round robin balancing into a grpc client.
 
 # Features
 
-* Round robin load distribution
+* Round-robin load balancing with [gRPC](https://godoc.org/google.golang.org/grpc#RoundRobin)
 * Service name discovery (collision supported)
-* High availability service discovery with Marathon
+* High availability service discovery with [Marathon](https://mesosphere.github.io/marathon/docs/high-availability.html)
 
 # Dependencies
 
@@ -25,8 +27,8 @@ Import the library into a project:
 
 # Usage
 
-Resolver uses Marathon label feature in order to identify services.
-The marathon label is composed of the service unique name and the port
+Resolver uses Marathon labels feature in order to identify risdient services in the cluster.
+The label is composed of the service unique name and the port
 index. Those two informations will allow the resolver to identify the
 service's tasks and on which port the grpc client should establish a connection.
 Let's start with a simple app definition:
@@ -59,7 +61,7 @@ Let's start with a simple app definition:
 }
 ```
 
-Here, we have just defined an application called my-app with a service resolver name `my-app-service` which points to the port index 0.
+We have just defined an application called `my-app` with a service resolver name of `my-app-service` which points to the port index 0.
 
 A service resolver name can be defined using a labels map:
 
@@ -82,7 +84,7 @@ import (
 func main() {
      resolver, err := resolver.New("marathon.mesos:8080")
      if err != nil {
-        log.Fatalf("couldn't instantiation resolver: %v", err)
+        log.Fatalf("couldn't instantiate resolver: %v", err)
      }
 
      b := grpc.RoundRobin(resolver)
@@ -95,7 +97,7 @@ func main() {
 
      c := pb.NewGreeterClient(conn)
 
-     r, err := c.SayHello(context.Background(), &pb.HelloRequest{Name: *name})
+     r, err := c.SayHello(context.Background(), &pb.HelloRequest{Name: "user1"})
      if err != nil {
          log.Fatalf("couldn't send say hello request: %v", err)
      }
