@@ -33,7 +33,7 @@ Let's start with a simple app definition:
 
 ```json
 {
-  "id": "my-app"
+  "id": "my-app",
   "cpus": 0.1,
   "mem": 64,
   "container": {
