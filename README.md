@@ -2,8 +2,6 @@
 
 Resolver is a grpc resolver using Marathon framework for service discovery. A minimalistic library that uses Marathon, which is a container orchestration platform for Apache Mesos and Datacenter Operating (DC/OS), to interact with other services using name-based system discovery. Plus when scaling a service, the resolver is able to monitor all the running service's tasks simultaneously.
 
-integrate round robin balancing into a grpc client.
-
 # Features
 
 * Round-robin load balancing with [gRPC](https://godoc.org/google.golang.org/grpc#RoundRobin)
