@@ -6,7 +6,7 @@ Resolver is a grpc resolver using Marathon framework for service discovery. A mi
 
 * Round-robin load balancing with [gRPC](https://godoc.org/google.golang.org/grpc#RoundRobin)
 * Service name discovery (collision supported)
-* High availability service discovery with [Marathon](https://mesosphere.github.io/marathon/docs/high-availability.html)
+* High availability with [Marathon](https://mesosphere.github.io/marathon/docs/high-availability.html)
 
 ## Dependencies
 
