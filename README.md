@@ -25,7 +25,7 @@ Import the library into a project:
 
 # Usage
 
-Resolver uses Marathon labels feature in order to identify risdient services in the cluster.
+Resolver uses Marathon labels feature in order to identify resident services in the cluster.
 The label is composed of the service unique name and the port
 index. Those two informations will allow the resolver to identify the
 service's tasks and on which port the grpc client should establish a connection.
