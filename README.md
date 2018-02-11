@@ -2,18 +2,18 @@
 
 Resolver is a grpc resolver using Marathon framework for service discovery. A minimalistic library that uses Marathon, which is a container orchestration platform for Apache Mesos and Datacenter Operating (DC/OS), to interact with other services using name-based system discovery. Plus when scaling a service, the resolver is able to monitor all the running service's tasks simultaneously.
 
-# Features
+## Features
 
 * Round-robin load balancing with [gRPC](https://godoc.org/google.golang.org/grpc#RoundRobin)
 * Service name discovery (collision supported)
 * High availability service discovery with [Marathon](https://mesosphere.github.io/marathon/docs/high-availability.html)
 
-# Dependencies
+## Dependencies
 
 * [Marathon](https://mesosphere.github.io/marathon): A production-grade container orchestration platform for Mesosphere's Datacenter.
 * [gRPC-Go](https://github.com/grpc/grpc-go): Go implementation of gRPC. A high performance, open source, general RPC framework.
 
-# Installation
+## Installation
 
 Install the resolver using the "go get" command:
 
@@ -23,7 +23,7 @@ Import the library into a project:
 
 `import "github.com/eddyzags/resolver"`
 
-# Usage
+## Usage
 
 Resolver uses Marathon labels feature in order to identify resident services in the cluster.
 The label is composed of the service unique name and the port
