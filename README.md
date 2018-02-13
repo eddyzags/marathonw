@@ -41,7 +41,7 @@ Let's start with a simple app definition:
     "type": "DOCKER",
     "docker": {
       "image": "eddyzags/healthy:latest",
-      "network": "HOST"
+      "network": "BRIDGE"
     },
     "portMappings": [
       {
